@@ -28,10 +28,11 @@ class LeagueListing(scrapy.Spider):
         print "//////////////////////"
         print responce.css("section.fichetitle h1::text").extract_first()
         print "//////////////////////"
-        for staff in responce.css("div#EFFECTIF tr"):
-            print "-------"
-            for player in staff.css("td.nom"):
-                playerName = player.css("a.attr(title)").extract_first()
-                playerLink = player.css("a.attr(href)").extract_first()
-                print "staff :: " + playerName + "->" + playerLink
-            print "-------"
+        for staff in responce.css("div#EFFECTIF tr td.nom"):
+            #print str(staff.css("a"))
+            staffName = staff.css("a::text").extract_first()
+            staffLink = staff.css("a::attr(href)").extract_first()
+            print "\t" + staffName + '\t->' + staffLink
+            yield responce.follow(url=staffLink, callback=self.parsePlayer)
+
+    def parsePlayer(self, responce):
